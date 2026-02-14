@@ -1,0 +1,8 @@
+For Backend run:
+
+cd backend/employeemng; python manage.py runserver
+
+For Frontend run:
+
+npm --prefix ".\frontend\employee-management" install
+npm --prefix ".\frontend\employee-management" start
