@@ -28,6 +28,8 @@ def create_default_users(sender, **kwargs):
             "email": "manager@company.com",
             "role": "manager",
             "password": "manager123",
+            "is_staff": False,
+            "is_superuser": False,
         },
         {
             "employee_id": "EMP001",
@@ -38,15 +40,24 @@ def create_default_users(sender, **kwargs):
             "role": "employee",
             "password": "employee123",
             "campaign": "Marketing Campaign 2024",
+            "is_staff": False,
+            "is_superuser": False,
         },
     ]
 
     for data in defaults:
         employee_id = data["employee_id"]
-        if User.objects.filter(employee_id=employee_id).exists():
-            continue
-
         password = data.pop("password")
-        user = User.objects.create_user(**data)
+
+        user, created = User.objects.get_or_create(
+            employee_id=employee_id,
+            defaults=data,
+        )
+
+        if not created:
+            for field, value in data.items():
+                setattr(user, field, value)
+
+        # Always enforce known demo credentials for hosted demos.
         user.set_password(password)
         user.save()
